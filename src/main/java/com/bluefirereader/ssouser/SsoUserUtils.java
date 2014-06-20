@@ -29,7 +29,6 @@ public class SsoUserUtils
 
     private SsoUserUtils() throws Exception {
 
-
         String base64PublicKey = getText("http://bluefire-sso.appspot.com/cert");
 
         byte[] base64PublicKeyBytes = BaseEncoding.base64().decode(base64PublicKey);
@@ -38,22 +37,17 @@ public class SsoUserUtils
 
     }
 
-    public static SsoUserUtils getInstance(){
+    public static SsoUserUtils getInstance() throws Exception {
         if (instance == null)
         {
-            try {
                 instance = new SsoUserUtils();
-            } catch (Exception e) {
-                log.severe("Algorithm Exception: " + e.getLocalizedMessage());
-                return null;
-            }
         }
         return instance;
     }
 
-    public SsoUser getUser(HttpServletRequest req) {
+    public SsoUser getUser(HttpServletRequest req) throws Exception {
         String authHeader = req.getHeader("Authorization");
-        if (!authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return null;
         }
 
@@ -62,8 +56,7 @@ public class SsoUserUtils
         return getUserFromJWT(tokenString);
     }
 
-    public SsoUser getUserFromJWT(String tokenString)
-    {
+    public SsoUser getUserFromJWT(String tokenString) throws Exception {
         SignedJWT signedJWT = null;
         try {
             signedJWT = SignedJWT.parse(tokenString);
@@ -74,40 +67,36 @@ public class SsoUserUtils
 
         boolean verified = false;
         JWSVerifier verifier = new RSASSAVerifier(publicKey);
-        try {
-            verified = signedJWT.verify(verifier);
-
-        } catch (JOSEException e) {
-            return null;
-        }
+        verified = signedJWT.verify(verifier);
 
         if (!verified)
-            return null;
+        {
+            throw new Exception("Could Verify JWT");
+        }
 
         SsoUser returnUser = new SsoUser();
 
-        try {
-            returnUser.setId(signedJWT.getJWTClaimsSet().getSubject());
-            returnUser.setEmail(signedJWT.getJWTClaimsSet().getStringClaim("email"));
-            returnUser.setName(signedJWT.getJWTClaimsSet().getStringClaim("name"));
-            returnUser.setSocialId(signedJWT.getJWTClaimsSet().getStringClaim("social-id"));
-            returnUser.setTokenType(signedJWT.getJWTClaimsSet().getStringClaim("token-type"));
-            returnUser.setCreatedAt(signedJWT.getJWTClaimsSet().getIssueTime());
-            returnUser.setExpires(signedJWT.getJWTClaimsSet().getExpirationTime());
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
+        returnUser.setId(signedJWT.getJWTClaimsSet().getSubject());
+        returnUser.setEmail(signedJWT.getJWTClaimsSet().getStringClaim("email"));
+        returnUser.setName(signedJWT.getJWTClaimsSet().getStringClaim("name"));
+        returnUser.setSocialId(signedJWT.getJWTClaimsSet().getStringClaim("social-id"));
+        returnUser.setTokenType(signedJWT.getJWTClaimsSet().getStringClaim("token-type"));
+        returnUser.setCreatedAt(signedJWT.getJWTClaimsSet().getIssueTime());
+        returnUser.setExpires(signedJWT.getJWTClaimsSet().getExpirationTime());
 
         //Final check is expiration date.
-        if (returnUser.getExpires() != null && new Date().getTime() > returnUser.getExpires().getTime()) {
+        if (returnUser.getExpires() != null && new Date().getTime() < returnUser.getExpires().getTime()) {
             return returnUser;
+        }
+        else
+        {
+            throw new Exception("Expiration Error - can't verify JWT. Current time: " + new Date().getTime() + ", JWT Expires: " + returnUser.getExpires().getTime());
         }
 
         // If necessary in the future, we can also reject on IAT that is too old, but for now
         // that seems like overkill.
 
-        return null;
+
 
 
     }
