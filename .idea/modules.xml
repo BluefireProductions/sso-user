@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/sso-user.iml" filepath="$PROJECT_DIR$/sso-user.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ballard.iml" filepath="$PROJECT_DIR$/ballard.iml" />
     </modules>
   </component>
 </project>
-

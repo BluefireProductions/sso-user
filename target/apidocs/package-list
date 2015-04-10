@@ -1,5 +1,4 @@
-com.bluefirereader.ssouser
-com.bluefirereader.ssouser.ballard
-com.bluefirereader.ssouser.ballard.endpoints
-com.bluefirereader.ssouser.ballard.parameters
-com.bluefirereader.ssouser.ballard.security
+com.bluefirereader.ballard
+com.bluefirereader.ballard.endpoints
+com.bluefirereader.ballard.endpoints.parameters
+com.bluefirereader.ballard.endpoints.security

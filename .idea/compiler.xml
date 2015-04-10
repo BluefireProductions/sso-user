@@ -22,10 +22,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
+        <module name="ballard" />
         <module name="sso-user" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="ballard" target="1.7" />
       <module name="sso-user" target="1.7" />
     </bytecodeTargetLevel>
   </component>
