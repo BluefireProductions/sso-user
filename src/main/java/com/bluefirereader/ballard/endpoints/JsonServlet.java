@@ -1,6 +1,7 @@
 package com.bluefirereader.ballard.endpoints;
 
 import com.bluefirereader.ballard.SsoUser;
+import com.bluefirereader.ballard.SsoUserUtils;
 import com.bluefirereader.ballard.endpoints.security.BallardEndpoint;
 import com.bluefirereader.ballard.endpoints.parameters.BallardParameterAutoGson;
 import com.bluefirereader.ballard.endpoints.parameters.BallardParameterExtraPath;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -30,6 +32,14 @@ public class JsonServlet extends HttpServlet{
         String endpointsRootPackage = null;
         endpointsRootPackage = servletConfig.getInitParameter("endpointsRootPackage");
         EndpointUtils.initializeEndpoints(endpointsRootPackage);
+
+        String publicKeyLocation = servletConfig.getInitParameter("publicKeyLocation");
+        try {
+            SsoUserUtils.getInstance().initializeSsoUserUtils(publicKeyLocation);
+        } catch (Exception e) {
+            log.log(Level.SEVERE,"Unable to instantiate public key for SSO.",e);
+            throw new ServletException("Unable to instantiate public key for SSO.");
+        }
     }
 
     @Override
@@ -70,7 +80,7 @@ public class JsonServlet extends HttpServlet{
             ssoUser = EndpointUtils.getSsoUser(req);
         }
         catch (Exception e){
-            log.severe("Error validating SSO user: " + e.getMessage());
+            log.log(Level.SEVERE, "Error validating SSO User", e);
         }
 
 

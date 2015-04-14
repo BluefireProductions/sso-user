@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.*;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
 import java.util.Date;
@@ -26,14 +27,14 @@ public class SsoUserUtils
 
     RSAPublicKey publicKey = null;
 
-    private SsoUserUtils() throws Exception {
-
-        String base64PublicKey = getText("http://bluefire-ballard.appspot.com/cert");
+    public void initializeSsoUserUtils(String publicKeyLocation) throws Exception {
+        String base64PublicKey = getText(publicKeyLocation);
 
         byte[] base64PublicKeyBytes = BaseEncoding.base64().decode(base64PublicKey);
-
         publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(base64PublicKeyBytes));
+    }
 
+    private SsoUserUtils() throws Exception {
     }
 
     public static SsoUserUtils getInstance() throws Exception {
