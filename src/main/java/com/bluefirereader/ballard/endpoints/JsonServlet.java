@@ -38,7 +38,7 @@ public class JsonServlet extends HttpServlet{
             SsoUserUtils.getInstance().initializeSsoUserUtils(publicKeyLocation);
         } catch (Exception e) {
             log.log(Level.SEVERE,"Unable to instantiate public key for SSO.",e);
-            throw new ServletException("Unable to instantiate public key for SSO.");
+            throw new ServletException("Unable to instantiate public key for SSO.",e);
         }
     }
 
