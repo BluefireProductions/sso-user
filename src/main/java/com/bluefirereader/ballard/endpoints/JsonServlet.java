@@ -33,12 +33,25 @@ public class JsonServlet extends HttpServlet{
         endpointsRootPackage = servletConfig.getInitParameter("endpointsRootPackage");
         EndpointUtils.initializeEndpoints(endpointsRootPackage);
 
-        String publicKeyLocation = servletConfig.getInitParameter("publicKeyLocation");
-        try {
-            SsoUserUtils.getInstance().initializeSsoUserUtils(publicKeyLocation);
-        } catch (Exception e) {
-            log.log(Level.SEVERE,"Unable to instantiate public key for SSO.",e);
-            throw new ServletException("Unable to instantiate public key for SSO.",e);
+        String publicKey = servletConfig.getInitParameter("publicKey");
+
+
+        if (publicKey != null){
+            try {
+                SsoUserUtils.getInstance().initializePublicKeyFromBase64String(publicKey);
+            } catch (Exception e) {
+                log.log(Level.SEVERE,"Unable to instantiate public key for SSO.",e);
+                throw new ServletException("Unable to instantiate public key for SSO.",e);
+            }
+        }
+        else{
+            String publicKeyLocation = servletConfig.getInitParameter("publicKeyLocation");
+            try {
+                SsoUserUtils.getInstance().initializePublicKeyFromUrl(publicKeyLocation);
+            } catch (Exception e) {
+                log.log(Level.SEVERE,"Unable to instantiate public key for SSO.",e);
+                throw new ServletException("Unable to instantiate public key for SSO.",e);
+            }
         }
     }
 

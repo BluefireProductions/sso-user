@@ -27,11 +27,15 @@ public class SsoUserUtils
 
     RSAPublicKey publicKey = null;
 
-    public void initializeSsoUserUtils(String publicKeyLocation) throws Exception {
-        String base64PublicKey = getText(publicKeyLocation);
-
+    public void initializePublicKeyFromBase64String(String base64PublicKey)throws Exception{
         byte[] base64PublicKeyBytes = BaseEncoding.base64().decode(base64PublicKey);
         publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(base64PublicKeyBytes));
+    }
+
+    public void initializePublicKeyFromUrl(String publicKeyLocation) throws Exception {
+        String base64PublicKey = getText(publicKeyLocation);
+
+        initializePublicKeyFromBase64String(base64PublicKey);
     }
 
     private SsoUserUtils() throws Exception {
