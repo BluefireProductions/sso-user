@@ -74,6 +74,7 @@ public class JsonServlet extends HttpServlet{
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
 
         // '/' path is not allowed.
         if (req.getPathInfo().length() < 2){
