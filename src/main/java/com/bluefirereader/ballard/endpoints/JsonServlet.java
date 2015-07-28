@@ -2,11 +2,8 @@ package com.bluefirereader.ballard.endpoints;
 
 import com.bluefirereader.ballard.SsoUser;
 import com.bluefirereader.ballard.SsoUserUtils;
+import com.bluefirereader.ballard.endpoints.parameters.*;
 import com.bluefirereader.ballard.endpoints.security.BallardEndpoint;
-import com.bluefirereader.ballard.endpoints.parameters.BallardParameterAutoGson;
-import com.bluefirereader.ballard.endpoints.parameters.BallardParameterExtraPath;
-import com.bluefirereader.ballard.endpoints.parameters.BallardParameterRawBody;
-import com.bluefirereader.ballard.endpoints.parameters.BallardParameterSsoUser;
 import com.bluefirereader.ballard.endpoints.security.SecurityChecker;
 import com.google.gson.Gson;
 
@@ -153,6 +150,18 @@ public class JsonServlet extends HttpServlet{
                             String bodyString = getBody(req);
 
                             parameters[index] = new Gson().fromJson(bodyString,parameterType);
+                        }
+                        else if (ann[0].annotationType().equals(BallardParameterNamedHeader.class)){
+                            BallardParameterNamedHeader ballardParameterNamedHeader = (BallardParameterNamedHeader)ann[0];
+                            String headerName = ballardParameterNamedHeader.headerName();
+                            if (headerName == null){
+                                log.severe("Annotation error for "+methodAndPath.method.getName()+": Must have at least one BallardParameter to inject a parameter");
+                                resp.setStatus(500);
+                                return;
+                            }
+                            req.getHeader(headerName);
+
+                            parameters[index] = req.getHeader(headerName);
                         }
                         else{
                             log.severe("Annotation error for "+methodAndPath.method.getName()+": Must have at least one BallardParameter to inject a parameter");
