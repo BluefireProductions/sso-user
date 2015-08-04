@@ -41,6 +41,15 @@ public class SsoUserUtils
     private SsoUserUtils() throws Exception {
     }
 
+    public static SsoUserUtils getInstanceWithPublicKey(String publicKey) throws Exception {
+        if (instance == null)
+        {
+            instance = new SsoUserUtils();
+            instance.initializePublicKeyFromBase64String(publicKey);
+        }
+        return instance;
+    }
+
     public static SsoUserUtils getInstance() throws Exception {
         if (instance == null)
         {
