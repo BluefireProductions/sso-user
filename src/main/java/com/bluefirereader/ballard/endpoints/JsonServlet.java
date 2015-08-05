@@ -193,12 +193,19 @@ public class JsonServlet extends HttpServlet{
                 } catch (InvocationTargetException e) {
                     StringWriter writer = new StringWriter();
                     PrintWriter printWriter = new PrintWriter( writer );
-                    e.getTargetException().printStackTrace( printWriter );
+                    e.getTargetException().printStackTrace(printWriter);
                     printWriter.flush();
 
                     String stackTrace = writer.toString();
-                    log.severe("Exception while processing " + req.getPathInfo() +". " +  stackTrace);
-                    resp.setStatus(500);
+                    log.severe("Exception while processing " + req.getPathInfo() + ". " + stackTrace);
+
+                    if (e.getTargetException() instanceof EndpointPermissionsException){
+                        resp.setStatus(403);
+                    }
+                    else{
+                        resp.setStatus(500);
+                    }
+
                     return;
                 }
             }
