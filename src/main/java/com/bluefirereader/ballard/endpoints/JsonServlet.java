@@ -5,6 +5,7 @@ import com.bluefirereader.ballard.SsoUserUtils;
 import com.bluefirereader.ballard.endpoints.parameters.*;
 import com.bluefirereader.ballard.endpoints.security.BallardEndpoint;
 import com.bluefirereader.ballard.endpoints.security.SecurityChecker;
+import com.bluefirereader.ballard.endpoints.types.BallardRedirect;
 import com.google.gson.Gson;
 
 import javax.servlet.ServletConfig;
@@ -176,6 +177,11 @@ public class JsonServlet extends HttpServlet{
                     String stringToOutput;
                     if (returnType.equals(String.class)){
                         stringToOutput = (String)methodAndPath.method.invoke(null,parameters);
+                    }
+                    else if (returnType.equals(BallardRedirect.class)){
+                        BallardRedirect redirectString = (BallardRedirect)methodAndPath.method.invoke(null,parameters);
+                        resp.sendRedirect(redirectString.redirectUrl);
+                        return;
                     }
                     else{
                         Object returnValue = methodAndPath.method.invoke(null,parameters);
